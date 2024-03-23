@@ -19,10 +19,12 @@
 
 if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_NAME}" ]; then
   export NAME=$(yq '.name' ./Chart.yaml)
-  echo ${NAME}
-  exit 0
-  # if [ -z "${NAME}" ]; then
-  #   echo "NAME is not set and Chart.yaml does not contain a name field"
-  #   exit 1
-  # fi
+  if [ -z "${NAME}" ]; then
+    echo "NAME is not set and Chart.yaml does not contain a name field"
+    exit 1
+  fi
+else
+    export NAME="${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_NAME}"
 fi
+
+echo --- "Using name: ${NAME}"
