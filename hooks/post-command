@@ -18,6 +18,42 @@ set -o errexit
 set -o pipefail
 
 
+if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_NAME}" ]; then
+  export NAME=$(yq '.name' ./Chart.yaml)
+  if [ -z "${NAME}" ]; then
+    echo "NAME is not set and Chart.yaml does not contain a name field"
+    exit 1
+  fi
+else
+    export NAME="${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_NAME}"
+fi
+
+echo --- "Using name: ${NAME}"
+
+if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_VERSION}" ]; then
+  export CHART_VERSION=$(yq '.version' ./Chart.yaml)
+  if [ -z "${CHART_VERSION}" ]; then
+    echo "CHART_VERSION is not set and Chart.yaml does not contain a version field"
+    exit 1
+  fi
+else
+    export CHART_VERSION="${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_VERSION}"
+fi
+
+echo --- "Using chart version: ${CHART_VERSION}"
+
+if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_APP_VERSION}" ]; then
+  export APP_VERSION=$(yq '.appVersion' ./Chart.yaml)
+  if [ -z "${APP_VERSION}" ]; then
+    echo "APP_VERSION is not set and Chart.yaml does not contain an appVersion field"
+    exit 1
+  fi
+else
+    export APP_VERSION="${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_APP_VERSION}"
+fi
+
+echo --- "Using app version: ${APP_VERSION}"
+
 echo ${REGISTRY_PASSWORD} | helm registry login -u ${REGISTRY_USERNAME} --password-stdin ${REGISTRY}
 
 if [ ! -z ${UPDATE_DEPENDENCIES} ]; then
