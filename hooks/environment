@@ -1,4 +1,5 @@
 #!/bin/bash
+
 export HELM_EXPERIMENTAL_OCI=1
 
 if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_NAME}" ]; then
