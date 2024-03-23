@@ -2,20 +2,20 @@
 
 # TODO: ensure yq is installed
 
-# yq --version 2&1 > /dev/null
+yq --version 2&1 > /dev/null
 
-# if [ $? -ne 0 ]; then
-#   echo "yq is not installed"
-#   exit 1
-# fi
+if [ $? -ne 0 ]; then
+  echo "yq is not installed"
+  exit 1
+fi
 
 # # TODO: ensure helm is installed and at least supported version
 
-# helm version 2&1 > /dev/null
-# if [ $? -ne 0 ]; then
-#   echo "helm is not installed"
-#   exit 1
-# fi
+helm version 2&1 > /dev/null
+if [ $? -ne 0 ]; then
+  echo "helm is not installed"
+  exit 1
+fi
 
 if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_NAME}" ]; then
   export NAME=$(yq '.name' ./Chart.yaml)

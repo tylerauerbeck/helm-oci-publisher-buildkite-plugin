@@ -2,28 +2,23 @@
 
 export HELM_EXPERIMENTAL_OCI=1
 
-# if [ -z "${REPOSITORY}" ]; then
-#   echo "REPOSITORY is not set"
-#   exit 1
-# fi
+if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH}" ]; then
+  export CHART_PATH="charts/${NAME}"
+else
+  export CHART_PATH="${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH}"
+fi
 
-# if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH}" ]; then
-#   export CHART_PATH="charts/${NAME}"
-# else
-#   export CHART_PATH="${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH}"
-# fi
+if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_REGISTRY}" ]; then
+  echo "REGISTRY is not set"
+  exit 1
+fi
 
-# if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_REGISTRY}" ]; then
-#   echo "REGISTRY is not set"
-#   exit 1
-# fi
+if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_REGISTRY_USERNAME}" ]; then
+  echo "REGISTRY_USERNAME is not set"
+  exit 1
+fi
 
-# if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_REGISTRY_USERNAME}" ]; then
-#   echo "REGISTRY_USERNAME is not set"
-#   exit 1
-# fi
-
-# if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_REGISTRY_PASSWORD}" ]; then
-#   echo "REGISTRY_PASSWORD is not set"
-#   exit 1
-# fi
+if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_REGISTRY_PASSWORD}" ]; then
+  echo "REGISTRY_PASSWORD is not set"
+  exit 1
+fi
