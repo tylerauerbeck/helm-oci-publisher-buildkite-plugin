@@ -1,0 +1,43 @@
+name: Helm OCI Publisher
+description: Allows for publishing a helm chart as an OCI artifact and optionally pushing it to a registry
+author: https://github.com/tylerauerbeck
+requirements:
+configuration:
+  properties:
+    name:
+      type: string
+      description: Chart name
+    # repository:
+    #   type: string
+    #   description: Chart repository name
+    # tag:
+    #   type: string
+    #   description: Chart version
+    chart_version:
+      type: string
+      description: Set version in the Chart
+    app_version:
+      type: string
+      description: Set appVersion in the Chart
+    helm_version:
+      type: string
+      description: Helm version to use (Default '3')
+    path:
+      type: string
+      description: Chart path (Default 'charts/{name}')
+    registry:
+      type: string
+      description: OCI registry
+    # publish:
+    #   type: boolean
+    #   description: Publish the chart to the OCI registry (Default 'true')
+    registry_username:
+      type: string
+      description: OCI registry username
+    registry_password:
+      type: string
+      description: OCI registry password
+    update_dependencies:
+      type: boolean
+      description: Update chart dependencies before packaging (Default 'false')
+additionalProperties: false

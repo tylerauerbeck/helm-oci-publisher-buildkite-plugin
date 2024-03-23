@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# Copyright 2020 Stefan Prodan. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set -o errexit
+set -o pipefail
+
+
+echo ${REGISTRY_PASSWORD} | helm registry login -u ${REGISTRY_USERNAME} --password-stdin ${REGISTRY}
+
+if [ ! -z ${UPDATE_DEPENDENCIES} ]; then
+  helm dep up ${CHART_PATH}
+fi
+
+helm package ${CHART_PATH} --version ${CHART_VERSION} --app-version ${APP_VERSION}
+
+helm push ${CHART_PATH}-${CHART_VERSION}.tgz oci://${REGISTRY}/${REPOSITORY}
+
+helm registry logout ${REGISTLRY}

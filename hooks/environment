@@ -1,0 +1,18 @@
+#!/bin/bash
+export HELM_EXPERIMENTAL_OCI: '1'
+
+if [ -z "${NAME}" ]; then
+  export NAME=$(yq '.name' Chart.yaml)
+  
+  if [ -z "${NAME}" ]; then
+    echo "NAME is not set and Chart.yaml does not contain a name field"
+    exit 1
+  fi
+fi
+
+if [ -z "${REPOSITORY}" ]; then
+  echo "REPOSITORY is not set"
+  exit 1
+fi
+
+if [ -z ""]
