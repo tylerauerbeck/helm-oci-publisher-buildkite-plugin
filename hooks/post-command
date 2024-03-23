@@ -62,6 +62,6 @@ fi
 
 helm package ${CHART_PATH} --version ${CHART_VERSION} --app-version ${APP_VERSION}
 
-helm push ${CHART_PATH}-${CHART_VERSION}.tgz oci://${REGISTRY}/${NAME}
+helm push ${NAME}-${CHART_VERSION}.tgz oci://${REGISTRY}/${NAME}
 
 helm registry logout ${REGISTRY}
