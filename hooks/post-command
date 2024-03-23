@@ -28,4 +28,4 @@ helm package ${CHART_PATH} --version ${CHART_VERSION} --app-version ${APP_VERSIO
 
 helm push ${CHART_PATH}-${CHART_VERSION}.tgz oci://${REGISTRY}/${REPOSITORY}
 
-helm registry logout ${REGISTLRY}
+helm registry logout ${REGISTRY}
