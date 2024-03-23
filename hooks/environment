@@ -4,11 +4,12 @@ export HELM_EXPERIMENTAL_OCI=1
 
 if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_NAME}" ]; then
   export NAME=$(yq '.name' ./Chart.yaml)
-  
-  if [ -z "${NAME}" ]; then
-    echo "NAME is not set and Chart.yaml does not contain a name field"
-    exit 1
-  fi
+  echo ${NAME}
+  exit 0
+  # if [ -z "${NAME}" ]; then
+  #   echo "NAME is not set and Chart.yaml does not contain a name field"
+  #   exit 1
+  # fi
 fi
 
 if [ -z "${REPOSITORY}" ]; then
