@@ -28,7 +28,7 @@ configuration:
     registry_password:
       type: string
       description: OCI registry password
-    update_dependencies:
-      type: boolean
-      description: Update chart dependencies before packaging (Default 'false')
+    # update_dependencies:
+    #   type: boolean
+    #   description: Update chart dependencies before packaging (Default 'false')
 additionalProperties: false

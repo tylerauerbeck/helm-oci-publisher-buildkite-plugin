@@ -56,9 +56,9 @@ echo --- "Using app version: ${APP_VERSION}"
 
 echo ${REGISTRY_PASSWORD} | helm registry login -u ${REGISTRY_USERNAME} --password-stdin ${REGISTRY}
 
-if [ ! -z ${UPDATE_DEPENDENCIES} ]; then
-  helm dep up ${CHART_PATH}
-fi
+# if [ ${UPDATE_DEPENDENCIES} != "false" ]; then
+#   helm dep up ${CHART_PATH}
+# fi
 
 helm package ${CHART_PATH} --version ${CHART_VERSION} --app-version ${APP_VERSION}
 
