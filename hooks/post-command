@@ -1,9 +1,35 @@
 set -o errexit
 set -o pipefail
 
+get_repo(){
+  case $BUILDKITE_REPO in
+	git*)
+	  echo ${BUILDKITE_REPO} | cut -d ':' -f 2 | cut -d '/' -f 2 | sed 's/.git$//'
+	  ;;
+	http*)
+	  echo ${BUILDKITE_REPO} | cut -d '/' -f 5
+	  ;;
+	*)
+	  echo "Unable to determine repository from BUILDKITE_REPO: ${BUILDKITE_REPO}"
+	  exit 1
+	  ;;
+  esac
+}
+
+if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH}" ]; then
+  export CHART_PATH="charts/$(get_repo)/"
+else
+  if [ "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH: -1}" == "/" ]; then
+    export CHART_PATH="${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH}"
+  else
+    export CHART_PATH="${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH}/"
+  fi
+fi
+
+echo --- "Using chart path: ${CHART_PATH}"
 
 if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_NAME}" ]; then
-  export NAME=$(yq '.name' ./Chart.yaml)
+  export NAME=$(yq '.name' ${CHART_PATH}Chart.yaml)
   if [ -z "${NAME}" ]; then
     echo "NAME is not set and Chart.yaml does not contain a name field"
     exit 1
@@ -14,16 +40,8 @@ fi
 
 echo --- "Using name: ${NAME}"
 
-if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH}" ]; then
-  export CHART_PATH="charts/${NAME}"
-else
-  export CHART_PATH="${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH}"
-fi
-
-echo --- "Using chart path: ${CHART_PATH}"
-
 if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_VERSION}" ]; then
-  export CHART_VERSION=$(yq '.version' ./Chart.yaml)
+  export CHART_VERSION=$(yq '.version' ${CHART_PATH}Chart.yaml)
   if [ -z "${CHART_VERSION}" ]; then
     echo "CHART_VERSION is not set and Chart.yaml does not contain a version field"
     exit 1
@@ -35,7 +53,7 @@ fi
 echo --- "Using chart version: ${CHART_VERSION}"
 
 if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_APP_VERSION}" ]; then
-  export APP_VERSION=$(yq '.appVersion' ./Chart.yaml)
+  export APP_VERSION=$(yq '.appVersion' ${CHART_PATH}Chart.yaml)
   if [ -z "${APP_VERSION}" ]; then
     echo "APP_VERSION is not set and Chart.yaml does not contain an appVersion field"
     exit 1
