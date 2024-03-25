@@ -26,6 +26,13 @@ else
   fi
 fi
 
+if [ -f "${CHART_PATH}Chart.yaml" ]; then
+  echo --- "Found Chart.yaml in ${CHART_PATH}"
+else
+  echo "Chart.yaml not found in ${CHART_PATH}"
+  exit 1
+fi
+
 echo --- "Using chart path: ${CHART_PATH}"
 
 if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_NAME}" ]; then

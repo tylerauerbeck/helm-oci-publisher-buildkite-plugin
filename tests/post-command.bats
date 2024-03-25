@@ -7,28 +7,38 @@ setup() {
   # export GIT_STUB_DEBUG=/dev/tty
 }
 
-#@test "default chart path" {
-#
-#  run $PWD/hooks/post-command
-#  #echo $status >&3
-#  [ $status -eq 1 ]
-#  assert_output --partial "Using chart path: charts/"
-#
-#}
+@test "default chart path" {
+  export BUILDKITE_REPO="git@github.com:acme-inc/my-project.git"
+  cd tests/data/charts-dir/
+  run $PWD/../../../hooks/post-command
+  #echo $status >&3
+  [ $status -eq 1 ]
+  assert_output --partial "Using chart path: charts/"
 
-#@test "user chart path (add trailing slash)" {
-#  export BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH="."
-#  run $PWD/hooks/post-command
-#  [ $status -eq 1 ]
-#  assert_output --partial "Using chart path: ./"
-#}
+}
 
-#@test "user chart path (provided trailing slash)" {
-#    export BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH="my-charts-dir/"
-#    run $PWD/hooks/post-command
-#    [ $status -eq 1 ]
-#    assert_output --partial "Using chart path: my-charts-dir/"
-#}
+@test "user chart path (add trailing slash)" {
+  export BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH="."
+  cd tests/data/root-chart/
+  run $PWD/../../../hooks/post-command
+  [ $status -eq 1 ]
+  assert_output --partial "Using chart path: ./"
+}
+
+@test "user chart path (provided trailing slash)" {
+  export BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH="./"
+  cd tests/data/root-chart/
+  run $PWD/../../../hooks/post-command
+  [ $status -eq 1 ]
+  assert_output --partial "Using chart path: ./"
+}
+
+@test "chart path doesn't exist" {
+  export BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH="this-path/does-not-exist/"
+  run $PWD/hooks/post-command
+  [ $status -eq 1 ]
+  assert_output --partial "Chart.yaml not found"
+}
 
 @test "find name from default charts path" {
     export BUILDKITE_REPO="git@github.com:acme-inc/my-project.git"
@@ -49,6 +59,5 @@ setup() {
     assert_output --partial "chart version: 0.1.0"
     assert_output --partial "app version: 1.16.0"
 }
-
 
 
