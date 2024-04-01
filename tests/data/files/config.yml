@@ -1,0 +1,14 @@
+http:
+  # set this to literal 'address: ""' to listen on all interfaces.
+  # https://github.com/project-zot/zot/issues/1063
+  address: ""
+  port: 4999 
+  realm: "localhost-zot"
+  auth:
+    htpasswd:
+      path: "/.htpasswd"
+log:
+  level: "debug"
+storage:
+  dedupe: true
+  rootdirectory: "storage"

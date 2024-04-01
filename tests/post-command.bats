@@ -60,4 +60,51 @@ setup() {
     assert_output --partial "app version: 1.16.0"
 }
 
+@test "use provided name" {
+  cd tests/data/root-chart
+  export BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_NAME="my-chart"
+  export BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH="."
+  run $PWD/../../../hooks/post-command
+  [ $status -ne 0 ]
+  assert_output --partial "Using name: my-chart"
+}
 
+@test "name not provided and missing name in Chart.yaml" {
+  cd tests/data/missing-name
+  export BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH="."
+  run $PWD/../../../hooks/post-command
+  [ $status -eq 1 ]
+  assert_output --partial "NAME is not set and Chart.yaml does not contain a name field"
+}
+
+@test "missing credentials" {
+  cd tests/data/root-chart
+  export BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH="."
+  run $PWD/../../../hooks/post-command
+  [ $status -eq 1 ]
+  assert_output --partial 'helm registry login" requires at least 1 argument'
+}
+
+@test "unable to login to registry" {
+  cd tests/data/root-chart
+  export BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH="."
+  export REGISTRY_PASSWORD="somethingverynotreal"
+  export REGISTRY_USERNAME="averyfakeuser"
+  export REGISTRY="dummyregistry.example.com"
+  run $PWD/../../../hooks/post-command
+  [ $status -eq 1 ]
+  assert_output --partial "Failed to login to registry"
+}
+
+# TODO: figure out why we're getting a connection refused in the bats test, but login is fine
+#       when run manually
+#@test "login to test registry" {
+#  cd tests/data/root-chart
+#  export BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_CHART_PATH="."
+#  export REGISTRY_PASSWORD="zot"
+#  export REGISTRY_USERNAME="zot"
+#  export REGISTRY="127.0.0.1:4999"
+#  run $PWD/../../../hooks/post-command
+#  [ $status -eq 1 ]
+#  assert_output --partial "Successfully logged in to registry"
+#}

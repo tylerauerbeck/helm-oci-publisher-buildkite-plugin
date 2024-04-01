@@ -1,5 +1,6 @@
-set -o errexit
+#set -o errexit
 set -o pipefail
+set -x
 
 get_repo(){
   case $BUILDKITE_REPO in
@@ -37,7 +38,7 @@ echo --- "Using chart path: ${CHART_PATH}"
 
 if [ -z "${BUILDKITE_PLUGIN_HELM_OCI_PUBLISHER_NAME}" ]; then
   export NAME=$(yq '.name' ${CHART_PATH}Chart.yaml)
-  if [ -z "${NAME}" ]; then
+  if [ "${NAME}" == "null" ]; then
     echo "NAME is not set and Chart.yaml does not contain a name field"
     exit 1
   fi
@@ -73,12 +74,21 @@ echo --- "Using app version: ${APP_VERSION}"
 
 echo ${REGISTRY_PASSWORD} | helm registry login -u ${REGISTRY_USERNAME} --password-stdin ${REGISTRY}
 
-# if [ ${UPDATE_DEPENDENCIES} != "false" ]; then
-#   helm dep up ${CHART_PATH}
-# fi
+if [ $? -ne 0 ]; then
+  echo "Failed to login to registry"
+  exit 1
+fi
+
+echo --- "Successfully logged in to registry: ${REGISTRY}"
 
 helm package ${CHART_PATH} --version ${CHART_VERSION} --app-version ${APP_VERSION}
 
+echo --- "Successfully packaged chart"
+
 helm push ${NAME}-${CHART_VERSION}.tgz oci://${REGISTRY}/${NAME}
 
+echo --- "Successfully pushed chart"
+
 helm registry logout ${REGISTRY}
+
+echo --- "Successfully logged out of registry"

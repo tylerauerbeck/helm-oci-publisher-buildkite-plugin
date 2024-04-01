@@ -1,6 +1,15 @@
-version: '3.7'
 services:
   tests:
-    image: buildkite/plugin-tester:v4.1.1
+    image: plugin-tester:tyler
     volumes:
       - ".:/plugin"
+    depends_on:
+      - registry
+  registry:
+    image: ghcr.io/project-zot/zot-minimal-linux-amd64:v2.0.3
+    command: ["serve", "/config.yml"]
+    ports:
+      - "4999:4999"
+    volumes:
+      - ./tests/data/files/htpasswd:/.htpasswd
+      - ./tests/data/files/config.yml:/config.yml
